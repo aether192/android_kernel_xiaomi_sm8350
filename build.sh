@@ -10,7 +10,7 @@ sudo apt-get install device-tree-compiler -y
 KDIR=$(pwd)
 DATE=$(date +%d-%h-%Y-%R:%S | sed "s/:/./g")
 START=$(date +"%s")
-TCDIR=proton-clang
+TCDIR=$(pwd)/clang
 DTB=out/arch/arm64/boot/dtb
 DTBO=out/arch/arm64/boot/dtbo.img
 IMAGE=out/arch/arm64/boot/Image.gz-dtb
@@ -90,8 +90,8 @@ function compile() {
 echo -e "\nKernel compiled succesfully! Zipping up...\n"
 if [ -d "$AK3_DIR" ]; then
 	cp -r $AK3_DIR AnyKernel3
-	git -C AnyKernel3 checkout renoir &> /dev/null
-elif ! git clone -q https://github.com/aether192/AnyKernel3 -b renoir; then
+	git -C AnyKernel3 checkout master &> /dev/null
+elif ! git clone -q https://github.com/aether192/AnyKernel3 -b master; then
 	echo -e "\nAnyKernel3 repo not found locally and couldn't clone from GitHub! Aborting..."
 	exit 1
 fi
