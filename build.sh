@@ -10,7 +10,7 @@ sudo apt-get install device-tree-compiler -y
 KDIR=$(pwd)
 DATE=$(date +%d-%h-%Y-%R:%S | sed "s/:/./g")
 START=$(date +"%s")
-TCDIR=$(pwd)/toolchains/clang
+TCDIR=proton-clang
 DTB=out/arch/arm64/boot/dtb
 DTBO=out/arch/arm64/boot/dtbo.img
 IMAGE=out/arch/arm64/boot/Image.gz-dtb
