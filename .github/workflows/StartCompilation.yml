@@ -1,0 +1,45 @@
+name: StartCompilation
+on:
+  watch:
+    types: [started]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Compile KernelSU for Renoir
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup build kernel environment
+      run: |
+        sudo apt update
+        sudo apt install libc6-dev clang flex bison libssl-dev bc python3 python2 zip unzip git lld llvm
+        mkdir -p $GITHUB_WORKSPACE/kernel_workspace
+    - name: Download Proton-clang
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace
+        git clone https://github.com/kdrag0n/proton-clang.git proton-clang --depth=1
+        export PATH="$GITHUB_WORKSPACE/kernel_workspace/proton-clang/bin:$PATH"
+    - name: Download kernel source
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace
+        git clone https://github.com/aether192/android_kernel_xiaomi_sm8350.git --depth=1
+    - name: Integrate KernelSU
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace/android_kernel_xiaomi_sm8350
+        rm -rf KernelSU/
+        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s 18f0b26
+    - name: Compiling Kernel
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace/android_kernel_xiaomi_sm8350
+        chmod +x build.sh
+        ./build.sh
+        filename=$(find . -name Migo* -printf '%f\n')
+        echo $filename
+        echo "FILENAME=$filename" >> $GITHUB_ENV
+    - name: Uploading Kernel
+      uses: actions/upload-artifact@v4
+      with:
+        name: MigoKernel
+        path: ${{ github.workspace }}/kernel_workspace/android_kernel_xiaomi_sm8350/${{ env.FILENAME }}
